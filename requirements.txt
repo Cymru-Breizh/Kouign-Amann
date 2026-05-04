@@ -1,0 +1,14 @@
+deepeval
+litellm
+sacrebleu
+tqdm
+pandas
+wget
+gensim
+evaluate
+tiktoken
+unidecode
+datasets
+openpyxl
+fasttext
+cysgor

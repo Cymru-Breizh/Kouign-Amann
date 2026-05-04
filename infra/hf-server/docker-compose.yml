@@ -1,0 +1,30 @@
+services:
+  hf-server:
+    build: .
+    container_name: hf-server
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    env_file:
+      - hf.env
+    environment:
+      - MODEL_ID=unsloth/Llama-3.2-1B-Instruct
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['3']
+              capabilities: [gpu]
+    networks:
+      - llm-evals
+
+volumes:
+  hf-cache:
+
+networks:
+  llm-evals:
+    name: llm-evals
+    external: true

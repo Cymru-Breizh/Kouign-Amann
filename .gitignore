@@ -1,0 +1,10 @@
+evallogs
+__pycache__
+tmp
+*.env
+lid.176.bin
+tier*_sentences*.txt
+cysgor_cache.json
+results/log/
+results/logs/
+evals/**/*_private*.jsonl

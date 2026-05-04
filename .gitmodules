@@ -1,0 +1,6 @@
+[submodule "evals-private"]
+	path = evals-private
+	url = https://github.com/Cymru-Breizh/Kouign-Amann-private.git
+[submodule "src"]
+	path = src
+	url = https://github.com/Cymru-Breizh/Kouign-Amann-src.git

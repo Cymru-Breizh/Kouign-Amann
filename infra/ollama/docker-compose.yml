@@ -1,0 +1,172 @@
+# One Ollama service per GPU. Profiles control which ones are brought up:
+#   docker compose --profile gpu0 --profile gpu3 up -d
+# (or use the Makefile, which wraps that: `make up GPUS="0 3"`).
+#
+# Each service:
+#   - is pinned to a single GPU via deploy.resources.devices.device_ids
+#   - has its own model volume (so concurrent pulls can't collide)
+#   - is reachable on the llm-evals docker network as `ollama-gpuN:11434`
+#   - exposes a unique host port (11434 + N) for ad-hoc curl / testing
+#
+# To split one large model across two NVLinked GPUs, use the `ollama-gpu01`
+# example at the bottom (uncomment and adjust device_ids).
+
+x-ollama-base: &ollama-base
+  image: ollama/ollama
+  restart: unless-stopped
+  networks:
+    - llm-evals
+
+services:
+  ollama-gpu0:
+    <<: *ollama-base
+    container_name: ollama-gpu0
+    profiles: ["gpu0"]
+    ports: ["11434:11434"]
+    volumes:
+      - ollama-models-0:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+
+  ollama-gpu1:
+    <<: *ollama-base
+    container_name: ollama-gpu1
+    profiles: ["gpu1"]
+    ports: ["11435:11434"]
+    volumes:
+      - ollama-models-1:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu]
+
+  ollama-gpu2:
+    <<: *ollama-base
+    container_name: ollama-gpu2
+    profiles: ["gpu2"]
+    ports: ["11436:11434"]
+    volumes:
+      - ollama-models-2:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['2']
+              capabilities: [gpu]
+
+  ollama-gpu3:
+    <<: *ollama-base
+    container_name: ollama-gpu3
+    profiles: ["gpu3"]
+    ports: ["11437:11434"]
+    volumes:
+      - ollama-models-3:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['3']
+              capabilities: [gpu]
+
+  ollama-gpu4:
+    <<: *ollama-base
+    container_name: ollama-gpu4
+    profiles: ["gpu4"]
+    ports: ["11438:11434"]
+    volumes:
+      - ollama-models-4:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['4']
+              capabilities: [gpu]
+
+  ollama-gpu5:
+    <<: *ollama-base
+    container_name: ollama-gpu5
+    profiles: ["gpu5"]
+    ports: ["11439:11434"]
+    volumes:
+      - ollama-models-5:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['5']
+              capabilities: [gpu]
+
+  ollama-gpu6:
+    <<: *ollama-base
+    container_name: ollama-gpu6
+    profiles: ["gpu6"]
+    ports: ["11440:11434"]
+    volumes:
+      - ollama-models-6:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['6']
+              capabilities: [gpu]
+
+  ollama-gpu7:
+    <<: *ollama-base
+    container_name: ollama-gpu7
+    profiles: ["gpu7"]
+    ports: ["11441:11434"]
+    volumes:
+      - ollama-models-7:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['7']
+              capabilities: [gpu]
+
+  # Example: one container spanning GPUs 0 and 1 (NVLink pair if present).
+  # llama.cpp will split a loaded model's layers across both GPUs.
+  # Bring up with `make up GPUS=01` (or `docker compose --profile gpu01 up -d`).
+  # ollama-gpu01:
+  #   <<: *ollama-base
+  #   container_name: ollama-gpu01
+  #   profiles: ["gpu01"]
+  #   ports: ["11450:11434"]
+  #   volumes:
+  #     - ollama-models-01:/root/.ollama
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             device_ids: ['0','1']
+  #             capabilities: [gpu]
+
+volumes:
+  ollama-models-0:
+  ollama-models-1:
+  ollama-models-2:
+  ollama-models-3:
+  ollama-models-4:
+  ollama-models-5:
+  ollama-models-6:
+  ollama-models-7:
+  # ollama-models-01:
+
+networks:
+  llm-evals:
+    name: llm-evals
